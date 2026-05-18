@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14.08 · Naomi & Shaun</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Space+Mono:wght@400;700&family=Satisfy&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lilac: #dbb8d4;
+    --olive: #b5b832;
+    --orange: #e8622a;
+    --pink: #d4256a;
+    --dark-pink: #a01850;
+    --cream: #fdf8f5;
+    --text: #2a0a18;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Space Mono', monospace;
+    background: var(--lilac);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--lilac);
+    padding: 24px;
+  }
+
+  .login-border {
+    border: 2px solid var(--pink);
+    border-radius: 4px;
+    padding: 40px 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+
+  .login-border::before, .login-border::after {
+    content: '✿';
+    color: var(--pink);
+    font-size: 18px;
+    position: absolute;
+  }
+  .login-border::before { top: -14px; left: 50%; transform: translateX(-50%); background: var(--lilac); padding: 0 8px; }
+  .login-border::after { bottom: -14px; left: 50%; transform: translateX(-50%); background: var(--lilac); padding: 0 8px; }
+
+  .login-script {
+    font-family: 'Satisfy', cursive;
+    color: var(--pink);
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  .login-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--pink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .login-date {
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--dark-pink);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--pink);
+    background: rgba(255,255,255,0.4);
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 12px;
+    outline: none;
+  }
+
+  .login-input:focus { background: rgba(255,255,255,0.7); }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--pink);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .login-btn:hover { background: var(--dark-pink); }
+  .login-error { color: var(--orange); font-size: 12px; margin-top: 8px; }
+
+  /* ── APP ── */
+  #app { display: none; }
+
+  /* Header */
+  .header {
+    background: var(--pink);
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, var(--orange) 0px, var(--orange) 20px, var(--olive) 20px, var(--olive) 40px);
+  }
+
+  .header-script {
+    font-family: 'Satisfy', cursive;
+    color: rgba(255,255,255,0.85);
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .header-names {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: white;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .header-amp {
+    font-size: 28px;
+    color: var(--lilac);
+  }
+
+  .header-date {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    margin-top: 6px;
+    margin-bottom: 20px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--olive), #d4d840);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* Days left */
+  .days-left {
+    display: inline-block;
+    margin-top: 12px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    letter-spacing: 1px;
+  }
+
+  /* Content */
+  .content {
+    padding: 20px 16px 60px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Week section */
+  .week-block { margin-bottom: 16px; }
+
+  .week-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: var(--pink);
+    color: white;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    user-select: none;
+    border-left: 5px solid var(--orange);
+  }
+
+  .week-header.collapsed { border-radius: 6px; }
+
+  .week-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .week-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .week-toggle { font-size: 10px; }
+
+  /* Task card */
+  .task-card {
+    background: var(--cream);
+    border-bottom: 1px solid rgba(219,184,212,0.4);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .task-card:last-child { border-radius: 0 0 6px 6px; border-bottom: none; }
+  .task-card:hover { background: #f5eff3; }
+  .task-card.done { background: #f0ece8; opacity: 0.6; }
+
+  .task-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--pink);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: white;
+  }
+
+  .task-card.done .task-check {
+    background: var(--pink);
+    border-color: var(--pink);
+  }
+
+  .task-body { flex: 1; min-width: 0; }
+
+  .task-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 3px;
+  }
+
+  .task-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .task-card.done .task-name { text-decoration: line-through; color: #999; }
+
+  .task-cat {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .task-day {
+    font-size: 10px;
+    color: var(--pink);
+    margin-bottom: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .task-detail {
+    font-size: 11px;
+    color: #7a6070;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* Category colours */
+  .cat-Garments  { background: #fde8d8; color: #c04a10; }
+  .cat-Logistics { background: #e8eef8; color: #2040a0; }
+  .cat-Venue     { background: #e8f5ee; color: #1a7040; }
+  .cat-Décor     { background: #fef0e8; color: #b04020; }
+  .cat-Music     { background: #f5e8f8; color: #7030a0; }
+  .cat-Payments  { background: #fdf8e0; color: #806000; }
+  .cat-Food      { background: #e8f8f0; color: #107040; }
+  .cat-Admin     { background: #f0e8f8; color: #602080; }
+  .cat-Rings     { background: #fff0e8; color: #b04010; }
+
+  /* Footer */
+  .footer-note {
+    background: var(--olive);
+    margin: 0 -16px;
+    padding: 20px 24px;
+    margin-top: 8px;
+  }
+
+  .footer-note h4 {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--pink);
+    margin-bottom: 10px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+  }
+
+  .footer-item {
+    font-size: 11px;
+    color: white;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .footer-item:last-child { border-bottom: none; }
+  .footer-date { color: rgba(255,255,255,0.6); font-size: 10px; }
+
+  /* Logout */
+  .logout-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: white;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    z-index: 100;
+  }
+
+  .corner-deco {
+    position: absolute;
+    font-size: 14px;
+    color: var(--pink);
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-border">
+    <div class="login-script">you're invited to access</div>
+    <div class="login-title">NAOMI<br><span class="header-amp">&</span>SHAUN</div>
+    <div class="login-date">14th August 2026</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="enter password" onkeydown="if(event.key==='Enter')tryLogin()">
+    <button class="login-btn" onclick="tryLogin()">Enter ✿</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <button class="logout-btn" onclick="logout()">logout</button>
+
+  <div class="header">
+    <div class="header-script">planning the marriage of</div>
+    <div class="header-names">NAOMI <span class="header-amp">&</span> SHAUN</div>
+    <div class="header-date">14th August 2026 · St Stephen's & The George</div>
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="prog-text">0 of 31 tasks done</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="days-left" id="days-left"></div>
+  </div>
+
+  <div class="content">
+    <div id="task-list"></div>
+
+    <div class="footer-note">
+      <h4>After 5th June — don't forget</h4>
+      <div class="footer-item"><span>Pay the church</span><span class="footer-date">Before 14 Aug · ~£750</span></div>
+      <div class="footer-item"><span>Pay Sizzling Thyme remainder</span><span class="footer-date">~31 July</span></div>
+      <div class="footer-item"><span>Pay Palette Pizza (Erika)</span><span class="footer-date">Just before 14 Aug</span></div>
+      <div class="footer-item"><span>Order of Service — final print</span><span class="footer-date">Mid July</span></div>
+      <div class="footer-item"><span>YouTube live — chase Mike</span><span class="footer-date">July</span></div>
+      <div class="footer-item"><span>Fizz logistics — confirm Wendy</span><span class="footer-date">July</span></div>
+      <div class="footer-item"><span>Glass hire return — Majestic</span><span class="footer-date">15 Aug</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASSWORD = "Bastardbitch2026!";
+const SESSION_KEY = "1408_auth";
+const STORAGE_KEY = "1408_tasks";
+
+const TASKS = [
+  // Week 1
+  { id:1,  week:"Week 1: 13–17 May",   day:"Wed 14 May", task:"Source buttons for trousers & Clarke's suit", detail:"Macculloch & Wallace or Tower/Soho — needed before sending to Yasue", cat:"Garments" },
+  { id:2,  week:"Week 1: 13–17 May",   day:"Wed 14 May", task:"Sort Mum's fabric at Andrew Moss", detail:"Confirm fabric choice and brief Yasue on the dress", cat:"Garments" },
+  { id:3,  week:"Week 1: 13–17 May",   day:"Thu 15 May", task:"Package Clarke's suit for Yasue", detail:"Include measurements, reference photos and buttons if ready", cat:"Garments" },
+  { id:4,  week:"Week 1: 13–17 May",   day:"Thu 15 May", task:"Contact Kanwal re: wedding car", detail:"Confirm availability 14th Aug, discuss ribbon + thank you (drink/food at The George)", cat:"Logistics" },
+  { id:5,  week:"Week 1: 13–17 May",   day:"Fri 16 May", task:"Send Clarke's suit to Yasue", detail:"Post or deliver — don't let this slip beyond Friday", cat:"Garments" },
+  { id:6,  week:"Week 1: 13–17 May",   day:"Fri 16 May", task:"Check disco ball + coat rails with The George", detail:"Email/call Paul — confirm both in one message", cat:"Venue" },
+  { id:7,  week:"Week 1: 13–17 May",   day:"Sat 17 May", task:"World of Sewing — buy bunting fabric", detail:"Full width 150cm — need 26 metres. Each strip 10cm cut along width, 75cm total length", cat:"Décor" },
+  { id:8,  week:"Week 1: 13–17 May",   day:"Sat 17 May", task:"Order bunting rope online", detail:"Jute or cotton rope — 120m + 10% spare. Order same day for delivery next week", cat:"Décor" },
+
+  // Week 2
+  { id:9,  week:"Week 2: 18–24 May",   day:"Mon 19 May", task:"Contact Majestic Wines — glass hire", detail:"Check availability for 14th Aug, confirm deposit terms and collection/return", cat:"Logistics" },
+  { id:10, week:"Week 2: 18–24 May",   day:"Mon 19 May", task:"Decide church outro song with Naomi", detail:"Walk-on is Nick Cave — need the outro before you can send to Mark", cat:"Music" },
+  { id:11, week:"Week 2: 18–24 May",   day:"Tue 20 May", task:"Send church music to Mark", detail:"2 songs for signing the register + outro + mingling playlist for fizz/photos", cat:"Music" },
+  { id:12, week:"Week 2: 18–24 May",   day:"Wed 21 May", task:"Begin bunting making sessions", detail:"Tear fabric into 10cm strips, start knotting with 15cm gaps. Little and often!", cat:"Décor" },
+  { id:13, week:"Week 2: 18–24 May",   day:"Wed 21 May", task:"Research candles", detail:"Compare Diptyque vs alternatives — scent throw, burn time, price. Max 4 needed (church + George interior)", cat:"Décor" },
+  { id:14, week:"Week 2: 18–24 May",   day:"Thu 22 May", task:"Order candles", detail:"Confirm choice and order — allow delivery time", cat:"Décor" },
+  { id:15, week:"Week 2: 18–24 May",   day:"Thu 22 May", task:"Check Sizzling Thyme contract", detail:"Find exact remainder amount + confirm due date (expect ~31 July)", cat:"Payments" },
+  { id:16, week:"Week 2: 18–24 May",   day:"Fri 23 May", task:"Start George arrival playlist", detail:"Guests arriving + between speeches/live music — curate the vibe", cat:"Music" },
+  { id:17, week:"Week 2: 18–24 May",   day:"Fri 23 May", task:"Confirm PA/outside speakers with Paul at The George", detail:"Can indoor playlist connect to outside courtyard? If not, plan separate outside playlist", cat:"Venue" },
+
+  // Week 3
+  { id:18, week:"Week 3: 25–31 May",   day:"Mon 26 May", task:"Firm up pizza menu with Erika at Palette Pizza", detail:"Deadline beginning of June — confirm choices and payment timing", cat:"Food" },
+  { id:19, week:"Week 3: 25–31 May",   day:"Tue 27 May", task:"Continue bunting making", detail:"Aim for at least 60m complete by end of this week", cat:"Décor" },
+  { id:20, week:"Week 3: 25–31 May",   day:"Wed 28 May", task:"Begin designing wedding signs", detail:"1) George exterior board  2) Church board  3) Vinyl near courtyard stage — design all 3", cat:"Décor" },
+  { id:21, week:"Week 3: 25–31 May",   day:"Wed 28 May", task:"Start Photography Call Sheet", detail:"Both photographers + filmographer, key shots, timings, locations — we'll build this together", cat:"Admin" },
+  { id:22, week:"Week 3: 25–31 May",   day:"Thu 29 May", task:"Finalise signs — send to Dad & Uncle", detail:"Include sizes, especially vinyl dimensions for courtyard stage area", cat:"Décor" },
+  { id:23, week:"Week 3: 25–31 May",   day:"Fri 30 May", task:"💍 Rings meeting with Mitch at Loveweds", detail:"Confirm designs, timeline and collection date — must be well before 14th Aug", cat:"Rings" },
+  { id:24, week:"Week 3: 25–31 May",   day:"Sat 31 May", task:"Complete George arrival + between-acts playlist", detail:"Also draft outside contingency playlist mirroring indoor vibe if speakers can't connect", cat:"Music" },
+
+  // Week 4
+  { id:25, week:"Week 4: 1–5 June",    day:"Sun 1 Jun",  task:"Bunting final push — aim for 120m complete", detail:"Weekend session with Naomi — stick a film on and knot away 🎬", cat:"Décor" },
+  { id:26, week:"Week 4: 1–5 June",    day:"Mon 2 Jun",  task:"Finalise Photography Call Sheet", detail:"Send draft to both photographers and filmographer for review/approval", cat:"Admin" },
+  { id:27, week:"Week 4: 1–5 June",    day:"Mon 2 Jun",  task:"Confirm Palette Pizza with Erika — hard deadline", detail:"Do not let this slip — she needs confirmation by this week", cat:"Food" },
+  { id:28, week:"Week 4: 1–5 June",    day:"Tue 3 Jun",  task:"Start Order of Service design", detail:"Include: all names for readings/prayers/hymns, Shaun's name change note, Edith's prayer, Paul's secular reading", cat:"Admin" },
+  { id:29, week:"Week 4: 1–5 June",    day:"Wed 4 Jun",  task:"Chase Naomi — ice cream vendor confirmed?", detail:"Dessert needs locking in before mid-June", cat:"Food" },
+  { id:30, week:"Week 4: 1–5 June",    day:"Wed 4 Jun",  task:"Confirm glass hire booking — Majestic Wines", detail:"Lock in the date and pay deposit", cat:"Logistics" },
+  { id:31, week:"Week 4: 1–5 June",    day:"Thu 5 Jun",  task:"🎉 Review — are we at 90–95%?", detail:"Rings ✓ Kanwal ✓ Bunting ✓ Signs ✓ Playlists ✓ Call Sheet ✓ Pizza ✓ Glass Hire ✓ Candles ✓", cat:"Admin" },
+];
+
+// Auth
+function tryLogin() {
+  const val = document.getElementById('pw-input').value;
+  if (val === PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    showApp();
+  } else {
+    document.getElementById('login-error').textContent = 'Wrong password — try again!';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  renderTasks();
+  updateProgress();
+  updateDaysLeft();
+}
+
+// Storage
+function loadCompleted() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
+}
+
+function saveCompleted(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Days left
+function updateDaysLeft() {
+  const wedding = new Date('2026-08-14');
+  const today = new Date();
+  const diff = Math.ceil((wedding - today) / (1000 * 60 * 60 * 24));
+  document.getElementById('days-left').textContent = `${diff} days until the big day 🌸`;
+}
+
+// Progress
+function updateProgress() {
+  const completed = loadCompleted();
+  const done = Object.values(completed).filter(Boolean).length;
+  const total = TASKS.length;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById('prog-text').textContent = `${done} of ${total} tasks done`;
+  document.getElementById('prog-pct').textContent = `${pct}%`;
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+// Toggle task
+function toggleTask(id) {
+  const completed = loadCompleted();
+  completed[id] = !completed[id];
+  saveCompleted(completed);
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (completed[id]) {
+    card.classList.add('done');
+    card.querySelector('.task-check').textContent = '✓';
+  } else {
+    card.classList.remove('done');
+    card.querySelector('.task-check').textContent = '';
+  }
+  updateProgress();
+}
+
+// Render
+function renderTasks() {
+  const completed = loadCompleted();
+  const weeks = {};
+  TASKS.forEach(t => {
+    if (!weeks[t.week]) weeks[t.week] = [];
+    weeks[t.week].push(t);
+  });
+
+  const container = document.getElementById('task-list');
+  container.innerHTML = '';
+
+  const openWeeks = JSON.parse(sessionStorage.getItem('open_weeks') || '{"Week 1: 13–17 May":true}');
+
+  Object.entries(weeks).forEach(([week, tasks]) => {
+    const doneCt = tasks.filter(t => completed[t.id]).length;
+    const isOpen = openWeeks[week] !== false;
+
+    const block = document.createElement('div');
+    block.className = 'week-block';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'week-header' + (isOpen ? '' : ' collapsed');
+    hdr.innerHTML = `
+      <span class="week-title">${week}</span>
+      <span class="week-meta">
+        <span>${doneCt}/${tasks.length}</span>
+        <span class="week-toggle">${isOpen ? '▲' : '▼'}</span>
+      </span>`;
+
+    const body = document.createElement('div');
+    body.style.display = isOpen ? 'block' : 'none';
+
+    hdr.addEventListener('click', () => {
+      const nowOpen = body.style.display === 'none';
+      body.style.display = nowOpen ? 'block' : 'none';
+      hdr.querySelector('.week-toggle').textContent = nowOpen ? '▲' : '▼';
+      hdr.classList.toggle('collapsed', !nowOpen);
+      const ow = JSON.parse(sessionStorage.getItem('open_weeks') || '{}');
+      ow[week] = nowOpen;
+      sessionStorage.setItem('open_weeks', JSON.stringify(ow));
+    });
+
+    tasks.forEach(t => {
+      const done = completed[t.id];
+      const card = document.createElement('div');
+      card.className = 'task-card' + (done ? ' done' : '');
+      card.dataset.id = t.id;
+      card.innerHTML = `
+        <div class="task-check">${done ? '✓' : ''}</div>
+        <div class="task-body">
+          <div class="task-top">
+            <span class="task-name">${t.task}</span>
+            <span class="task-cat cat-${t.cat}">${t.cat}</span>
+          </div>
+          <div class="task-day">📅 ${t.day}</div>
+          <div class="task-detail">${t.detail}</div>
+        </div>`;
+      card.addEventListener('click', () => toggleTask(t.id));
+      body.appendChild(card);
+    });
+
+    block.appendChild(hdr);
+    block.appendChild(body);
+    container.appendChild(block);
+  });
+}
+
+// Auto-login if session active
+if (sessionStorage.getItem(SESSION_KEY)) showApp();
+</script>
+</body>
+</html>
